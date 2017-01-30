@@ -40,7 +40,8 @@
         </li>
       </ul>
     </div>
-    <Shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></Shopcart>
+    <Shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice"
+              :min-price="seller.minPrice"></Shopcart>
   </div>
 </template>
 
@@ -48,6 +49,8 @@
   import BScroll from 'better-scroll';
   import Shopcart from '../shopcart/shopcart.vue';
   import Cartcontrol from '../cartcontrol/cartcontrol.vue';
+
+  import eventHub from '../../eventhub';
 
   const ERR_OK = 0;
   export default {
@@ -73,6 +76,17 @@
           }
         }
         return 0;
+      },
+      selectFoods () {
+        let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        return foods;
       }
     },
     created () {
@@ -87,6 +101,7 @@
           });
         }
       });
+      eventHub.$on('cart-add', this._drop);
     },
     methods: {
       selectMenu (index, event) {
@@ -118,6 +133,11 @@
           height += item.clientHeight;
           this.listHeight.push(height);
         }
+      },
+      _drop (el) {
+        this.$nextTick(() => {
+          this.$refs.shopcart.drop(el);
+        });
       }
     },
     components: {
