@@ -1,30 +1,41 @@
 <template>
   <div>
     <div class="shopcart">
-      <div class="content" @click="toggleList">
+      <div class="content"
+           @click="toggleList">
         <div class="content-left">
           <div class="logo-wrapper">
-            <div class="logo" :class="{'highlight':totalCount>0}">
-              <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
+            <div class="logo"
+                 :class="{'highlight':totalCount>0}">
+              <i class="icon-shopping_cart"
+                 :class="{'highlight':totalCount>0}"></i>
             </div>
-            <div class="num" v-show="totalCount>0">{{totalCount}}</div>
+            <div class="num"
+                 v-show="totalCount>0">{{totalCount}}</div>
           </div>
-          <div class="price" :class="{'highlight':totalPrice>0}">
+          <div class="price"
+               :class="{'highlight':totalPrice>0}">
             <div class="pr">¥ {{totalPrice}}</div>
             <div class="desc">配送费¥{{deliveryPrice}}</div>
           </div>
           <!--<div class="desc">配送费¥{{deliveryPrice}}</div>-->
         </div>
-        <div class="content-right" @click.stop.prevent="pay">
-          <div class="pay" :class="payClass">
+        <div class="content-right"
+             @click.stop.prevent="pay">
+          <div class="pay"
+               :class="payClass">
             {{payDesc}}
           </div>
         </div>
       </div>
       <div class="ball-container">
-        <transition v-for="ball in balls" name="drop" @before-enter="beforeEnter" @enter="enter"
+        <transition v-for="ball in balls"
+                    name="drop"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
                     @after-enter="afterEnter">
-          <div v-show="ball.show" class="ball">
+          <div v-show="ball.show"
+               class="ball">
             <div class="inner inner-hook"></div>
           </div>
         </transition>
@@ -35,14 +46,18 @@
         </div>
       </transition>
       <transition name="fold">
-        <div class="shopcart-list" v-show="listShow">
+        <div class="shopcart-list"
+             v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-            <span class="empty" @click="empty">清空</span>
+            <span class="empty"
+                  @click="empty">清空</span>
           </div>
-          <div class="list-content" ref="listContent">
+          <div class="list-content"
+               ref="listContent">
             <ul>
-              <li class="food" v-for="food in selectFoods">
+              <li class="food"
+                  v-for="food in selectFoods">
                 <span class="name">{{food.name}}</span>
                 <div class="price">
                   <span>¥{{food.count > food.limit ? (food.limit * food.price + (food.count - food.limit) * food.oldPrice) : food.price * food.count}}</span>
@@ -57,202 +72,256 @@
       </transition>
     </div>
     <transition name="fade">
-      <div class="list-mask" @click="hideList" v-show="listShow"></div>
+      <div class="list-mask"
+           @click="hideList"
+           v-show="listShow"></div>
     </transition>
   </div>
 </template>
 
 <script>
-  import Cartcontrol from '../cartcontrol/cartcontrol.vue';
-  import BScroll from 'better-scroll';
+import Cartcontrol from '../cartcontrol/cartcontrol.vue';
+import BScroll from 'better-scroll';
 
-  export default {
-    props: {
-      selectFoods: {
-        type: Array,
-        default () {
-          return [];
-        }
-      },
-      deliveryPrice: {
-        type: Number,
-        default: 0
-      },
-      minPrice: {
-        type: Number,
-        default: 0
-      },
-      seller: {
-        type: Object,
-        default: {}
+export default {
+  props: {
+    selectFoods: {
+      type: Array,
+      default () {
+        return [];
       }
     },
-    data () {
-      return {
-        balls: [
-          {
-            show: false
-          },
-          {
-            show: false
-          },
-          {
-            show: false
-          },
-          {
-            show: false
-          },
-          {
-            show: false
-          }
-        ],
-        dropBalls: [],
-        fold: true,
-        selectDiscount: 0
-      };
+    deliveryPrice: {
+      type: Number,
+      default: 0
     },
-    computed: {
-      totalPrice () {
-        let total = 0;
-        this.selectFoods.forEach((food) => {
-          let currentPrice = 0;
-          if (food.count > food.limit) {
-            currentPrice += food.limit * food.price + (food.count - food.limit) * food.oldPrice;
+    minPrice: {
+      type: Number,
+      default: 0
+    },
+    seller: {
+      type: Object,
+      default: {}
+    }
+  },
+  data () {
+    return {
+      balls: [
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        }
+      ],
+      dropBalls: [],
+      fold: true,
+      selectDiscount: 0
+    };
+  },
+  computed: {
+    totalPrice () {
+      let total = 0;
+      this.selectFoods.forEach((food) => {
+        let currentPrice = 0;
+        if (food.count > food.limit) {
+          currentPrice += food.limit * food.price + (food.count - food.limit) * food.oldPrice;
+        } else {
+          currentPrice += food.price * food.count;
+        }
+        total += currentPrice;
+      });
+      return total;
+    },
+    totalCount () {
+      let count = 0;
+      this.selectFoods.forEach((food) => {
+        count += food.count;
+      });
+      return count;
+    },
+    payDesc () {
+      if (this.totalPrice === 0) {
+        return `¥${this.minPrice}元起送`;
+      } else if (this.totalPrice < this.minPrice) {
+        return `还差¥${this.minPrice - this.totalPrice}元起送`;
+      } else {
+        return '去结算';
+      }
+    },
+    payClass () {
+      if (this.totalPrice < this.minPrice) {
+        return 'not-enough';
+      } else {
+        return 'enough';
+      }
+    },
+    listShow () {
+      if (!this.totalCount) {
+        this.fold = true;
+        return false;
+      }
+      let show = !this.fold;
+      if (show) {
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.listContent, {
+              click: true
+            });
           } else {
-            currentPrice += food.price * food.count;
+            this.scroll.refresh();
           }
-          total += currentPrice;
         });
-        return total;
-      },
-      totalCount () {
-        let count = 0;
-        this.selectFoods.forEach((food) => {
-          count += food.count;
+      }
+      return show;
+    },
+    discountDesc () {
+      let desc = '';
+      let reducePrice = 0;
+      let flag = false;
+      let discount = this.seller.discount;
+      // 判断是否含有折扣商品
+      this.selectFoods.forEach((food) => {
+        if (food.discount) {
+          flag = true;
+        } else {
+          reducePrice += food.price * food.count;
+        }
+      });
+      if (flag) {
+        desc = '满减活动与折扣商品不能同享';
+      } else {
+        // 判断满减结果
+        let idx; // 满足当前满减值的数组索引
+        discount.forEach((dis, i) => {
+          if (reducePrice > dis.full) {
+            idx = i + 1;
+          }
         });
-        return count;
-      },
-      payDesc () {
-        if (this.totalPrice === 0) {
-          return `¥${this.minPrice}元起送`;
-        } else if (this.totalPrice < this.minPrice) {
-          return `还差¥${this.minPrice - this.totalPrice}元起送`;
+        if (idx) {
+          desc += `已满${reducePrice}, 结算减${discount[idx - 1].reduce}`;
         } else {
-          return '去结算';
-        }
-      },
-      payClass () {
-        if (this.totalPrice < this.minPrice) {
-          return 'not-enough';
-        } else {
-          return 'enough';
-        }
-      },
-      listShow () {
-        if (!this.totalCount) {
-          this.fold = true;
-          return false;
-        }
-        let show = !this.fold;
-        if (show) {
-          this.$nextTick(() => {
-            if (!this.scroll) {
-              this.scroll = new BScroll(this.$refs.listContent, {
-                click: true
-              });
-            } else {
-              this.scroll.refresh();
-            }
+          discount.forEach((dis) => {
+            desc += `满${dis.full}减${dis.reduce} `;
           });
         }
-        return show;
-      },
-      discountDesc () {
-        if (this.selectDiscount > 0) {
-          return '满减、满赠活动与折扣商品不能同享';
-        }
-        let discount = this.seller.discount;
-        let desc = '';
-        discount.forEach((dis) => {
-          desc += `满${dis.full}减${dis.reduce} `;
-        });
-        return desc;
       }
+      return desc;
     },
-    methods: {
-      drop (el) {
-        for (let i = 0; i < this.balls.length; i++) {
-          let ball = this.balls[i];
-          if (!ball.show) {
-            ball.show = true;
-            ball.el = el;
-            this.dropBalls.push(ball);
-            return;
-          }
+    fullReduce () {
+      let price = 0;
+      let reducePrice = 0;
+      let flag = false;
+      let discount = this.seller.discount;
+      // 判断是否含有折扣商品
+      this.selectFoods.forEach((food) => {
+        if (food.discount) {
+          flag = true;
+        } else {
+          reducePrice += food.price * food.count;
         }
-      },
-      toggleList () {
-        if (!this.totalCount) {
+      });
+      if (flag) {
+        return 0;
+      } else {
+        // 判断满减结果
+        let idx; // 满足当前满减值的数组索引
+        discount.forEach((dis, i) => {
+          if (reducePrice > dis.full) {
+            idx = i + 1;
+          }
+        });
+
+        if (idx) {
+          price += discount[idx - 1].reduce;
+        }
+      }
+      return price;
+    }
+  },
+  methods: {
+    drop (el) {
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.balls[i];
+        if (!ball.show) {
+          ball.show = true;
+          ball.el = el;
+          this.dropBalls.push(ball);
           return;
         }
-        this.fold = !this.fold;
-      },
-      empty () {
-        this.selectFoods.forEach((food) => {
-          food.count = 0;
-        });
-      },
-      hideList () {
-        this.fold = true;
-      },
-      pay () {
-        if (this.totalPrice < this.minPrice) {
-            return;
-        }
-        console.log(this.seller);
-        window.alert(`支付 ¥ ${this.totalPrice} 元`);
-      },
-      beforeEnter (el) {
-        let count = this.balls.length;
-        while (count--) {
-          let ball = this.balls[count];
-          if (ball.show) {
-            let rect = ball.el.getBoundingClientRect();
-            let x = rect.left - 32;
-            let y = -(window.innerHeight - rect.top - 22);
-            el.style.display = '';
-            el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
-            el.style.transform = `translate3d(0, ${y}px, 0)`;
-            let inner = el.getElementsByClassName('inner-hook')[0];
-            inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
-            inner.style.transform = `translate3d(${x}px, 0, 0)`;
-          }
-        }
-      },
-      enter (el, done) {
-        /* eslint-disable no-unused-vars */
-        let rf = el.offsetHeight;
-        this.$nextTick(() => {
-          el.style.webkitTransform = 'translate3d(0,0,0)';
-          el.style.transform = 'translate3d(0,0,0)';
+      }
+    },
+    toggleList () {
+      if (!this.totalCount) {
+        return;
+      }
+      this.fold = !this.fold;
+    },
+    empty () {
+      this.selectFoods.forEach((food) => {
+        food.count = 0;
+      });
+    },
+    hideList () {
+      this.fold = true;
+    },
+    pay () {
+      if (this.totalPrice < this.minPrice) {
+        return;
+      }
+      let info = `支付 ¥ ${this.totalPrice + this.seller.deliveryPrice - this.fullReduce} \n其中: \n商品总价: ¥${this.totalPrice}\n运费:¥${this.seller.deliveryPrice}\n满减:¥${this.fullReduce}`;
+      window.alert(info);
+    },
+    beforeEnter (el) {
+      let count = this.balls.length;
+      while (count--) {
+        let ball = this.balls[count];
+        if (ball.show) {
+          let rect = ball.el.getBoundingClientRect();
+          let x = rect.left - 32;
+          let y = -(window.innerHeight - rect.top - 22);
+          el.style.display = '';
+          el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
+          el.style.transform = `translate3d(0, ${y}px, 0)`;
           let inner = el.getElementsByClassName('inner-hook')[0];
-          inner.style.webkitTransform = 'translate3d(0,0,0)';
-          inner.style.transform = 'translate3d(0,0,0)';
-        });
-        done();
-      },
-      afterEnter (el) {
-        let ball = this.dropBalls.shift();
-        if (ball) {
-          ball.show = false;
-          el.style.display = 'none';
+          inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+          inner.style.transform = `translate3d(${x}px, 0, 0)`;
         }
       }
     },
-    components: {
-      Cartcontrol
+    enter (el, done) {
+      /* eslint-disable no-unused-vars */
+      let rf = el.offsetHeight;
+      this.$nextTick(() => {
+        el.style.webkitTransform = 'translate3d(0,0,0)';
+        el.style.transform = 'translate3d(0,0,0)';
+        let inner = el.getElementsByClassName('inner-hook')[0];
+        inner.style.webkitTransform = 'translate3d(0,0,0)';
+        inner.style.transform = 'translate3d(0,0,0)';
+      });
+      done();
+    },
+    afterEnter (el) {
+      let ball = this.dropBalls.shift();
+      if (ball) {
+        ball.show = false;
+        el.style.display = 'none';
+      }
     }
-  };
+  },
+  components: {
+    Cartcontrol
+  }
+};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
