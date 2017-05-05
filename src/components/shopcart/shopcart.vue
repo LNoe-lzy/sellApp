@@ -9,8 +9,11 @@
             </div>
             <div class="num" v-show="totalCount>0">{{totalCount}}</div>
           </div>
-          <div class="price" :class="{'highlight':totalPrice>0}">¥ {{totalPrice}} 元</div>
-          <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
+          <div class="price" :class="{'highlight':totalPrice>0}">
+            <div class="pr">¥ {{totalPrice}}</div>
+            <div class="desc">配送费¥{{deliveryPrice}}</div>
+          </div>
+          <!--<div class="desc">配送费¥{{deliveryPrice}}</div>-->
         </div>
         <div class="content-right" @click.stop.prevent="pay">
           <div class="pay" :class="payClass">
@@ -26,6 +29,11 @@
           </div>
         </transition>
       </div>
+      <transition name="discount">
+        <div class="discount-list">
+          {{this.discountDesc}}
+        </div>
+      </transition>
       <transition name="fold">
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
@@ -37,7 +45,7 @@
               <li class="food" v-for="food in selectFoods">
                 <span class="name">{{food.name}}</span>
                 <div class="price">
-                  <span>¥{{food.price*food.count}}</span>
+                  <span>¥{{food.count > food.limit ? (food.limit * food.price + (food.count - food.limit) * food.oldPrice) : food.price * food.count}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
                   <Cartcontrol :food="food"></Cartcontrol>
@@ -73,6 +81,10 @@
       minPrice: {
         type: Number,
         default: 0
+      },
+      seller: {
+        type: Object,
+        default: {}
       }
     },
     data () {
@@ -95,14 +107,21 @@
           }
         ],
         dropBalls: [],
-        fold: true
+        fold: true,
+        selectDiscount: 0
       };
     },
     computed: {
       totalPrice () {
         let total = 0;
         this.selectFoods.forEach((food) => {
-          total += food.price * food.count;
+          let currentPrice = 0;
+          if (food.count > food.limit) {
+            currentPrice += food.limit * food.price + (food.count - food.limit) * food.oldPrice;
+          } else {
+            currentPrice += food.price * food.count;
+          }
+          total += currentPrice;
         });
         return total;
       },
@@ -147,6 +166,17 @@
           });
         }
         return show;
+      },
+      discountDesc () {
+        if (this.selectDiscount > 0) {
+          return '满减、满赠活动与折扣商品不能同享';
+        }
+        let discount = this.seller.discount;
+        let desc = '';
+        discount.forEach((dis) => {
+          desc += `满${dis.full}减${dis.reduce} `;
+        });
+        return desc;
       }
     },
     methods: {
@@ -179,6 +209,7 @@
         if (this.totalPrice < this.minPrice) {
             return;
         }
+        console.log(this.seller);
         window.alert(`支付 ¥ ${this.totalPrice} 元`);
       },
       beforeEnter (el) {
@@ -236,7 +267,9 @@
     .content
       display: flex
       background: #141d27
+      z-index: 1000
       .content-left
+        z-index: 1000
         flex: 1
         .logo-wrapper
           display: inline-block
@@ -281,8 +314,7 @@
         .price
           display: inline-block
           vertical-align: top
-          margin-top: 12px
-          line-height: 24px
+          margin-top: 8px
           padding-right: 12px
           box-sizing: border-box
           border-right: 1px solid rgba(255, 255, 255, 0.1)
@@ -291,13 +323,13 @@
           color: rgba(255, 255, 255, 0.4)
           &.highlight
             color: #fff
-        .desc
-          display: inline-block
-          vertical-align: top
-          margin: 12px 0 0 12px
-          line-height: 24px
-          color: rgba(255, 255, 255, 0.4)
-          font-size: 10px
+          .desc
+            display: inline-block
+            vertical-align: top
+            line-height: 24px
+            color: rgba(255, 255, 255, 0.4)
+            font-size: 11px
+            font-weight: 100
       .content-right
         flex: 0 0 105px
         width: 105px
@@ -327,6 +359,17 @@
           border-radius: 50%
           background: rgb(0, 160, 220)
           transition: all 0.4s linear
+    .discount-list
+      height: 28px
+      background: rgba(255, 252, 153, .8)
+      width: 100%
+      position absolute
+      left: 0
+      bottom: 48px
+      z-index: 999
+      font-size: 12px
+      line-height: 28px
+      text-align: center      
     .shopcart-list
       position: absolute
       left: 0

@@ -17,7 +17,8 @@
           <li v-for="item in goods" class="food-list food-list-hook">
             <h1 class="title">{{item.name}}</h1>
             <ul>
-              <li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item border-1px">
+              <!--<li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item border-1px">-->
+              <li v-for="food in item.foods" class="food-item border-1px">
                 <div class="icon">
                   <img :src="food.icon" width="57" height="57">
                 </div>
@@ -27,6 +28,9 @@
                   <div class="extra">
                     <span class="count">月售{{food.sellCount}}份</span>
                     <span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="discount">
+                    <span class="dis" v-show="food.discount">{{food.discount}}折</span><span class="lim" v-show="food.limit">每单限{{food.limit}}份优惠</span>
                   </div>
                   <div class="price">
                     <span class="now">¥{{food.price}}</span>
@@ -42,7 +46,7 @@
         </ul>
       </div>
       <Shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice"
-                :min-price="seller.minPrice"></Shopcart>
+                :min-price="seller.minPrice" :seller="seller"></Shopcart>
     </div>
     <Food :food="selectedFood" ref="food"></Food>
   </div>
@@ -173,7 +177,7 @@
     .menu-wrapper
       flex: 0 0 80px
       width: 80px
-      background: #f3f5f7
+      background: #f8f8f8
       .menu-item
         display: table
         height: 54px
@@ -211,6 +215,8 @@
           width: 56px
           font-size: 12px
           vertical-align: middle
+          color: #666
+          font-weight: 100
           border-1px(rgba(7, 17, 27, 0.1))
     .foods-wrapper
       flex: 1
@@ -221,7 +227,7 @@
         border-left: 2px solid #d9dde1
         font-size: 12px
         color: rgb(147, 153, 159)
-        background: #f3f5f7
+        background: #f8f8f8
       .food-item
         display: flex
         margin: 18px
@@ -251,6 +257,21 @@
           .extra
             .count
               margin-right: 12px
+          .discount
+            font-size: 10px
+            color: #fff
+            margin-top: 8px
+            .dis
+              background: rgb(240, 115, 115)  
+              font-weight: 100
+              display: inline-block
+              padding: 4px 4px
+            .lim
+               color: rgb(240, 115, 115)
+               display: inline-block
+               padding: 3px 4px
+               box-sizing: border-box
+               border: 1px solid rgb(240, 115, 115)    
           .price
             font-weight: 700
             line-height: 24px
