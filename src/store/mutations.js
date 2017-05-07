@@ -9,8 +9,12 @@ export default {
   [type.ADD_CART] (state, food) {
     let foods = state.foods;
     let flag = false;
-    // 为food添加decrease属性
-    Object.assign(food, {decrease: food.oldPrice - food.price});
+    // 是否优惠
+    if (food.oldPrice) {
+      state.discountFood ++;
+      // 为food添加decrease属性
+      Object.assign(food, {decrease: food.oldPrice - food.price});
+    }
     // 替换已存在的项
     for (let i = 0; i < foods.length; i++) {
       if (foods[i].name === food.name) {
@@ -26,10 +30,6 @@ export default {
       if (food.oldPrice) {
         state.discountType ++;
       }
-    }
-    // 是否优惠
-    if (food.oldPrice) {
-      state.discountFood ++;
     }
   },
   [type.DECREASE_CART] (state, food) {
@@ -68,23 +68,18 @@ export default {
       state.cartInfo = '';
     }
 
-    let compare = function (property) {
-      return function (a, b) {
-        let v1 = a[property];
-        let v2 = b[property];
-        return v2 - v1;
-      };
-    };
-
     let curMax = seller.maxLimit;
 
     // 根据decrease对state中的对象进行排序
-    foods.sort(compare('decrease'));
+    foods.sort(util.array.compare('decrease'));
     for (let i = 0; i < foods.length; i++) {
       if (curMax < 0) {
         break;
       }
       let food = foods[i];
+      if (!food.oldPrice) {
+        continue;
+      }
       let count;
       if ((food.count >= curMax && food.count <= food.limit) || !food.limit) {
         count = curMax;
