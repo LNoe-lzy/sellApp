@@ -124,7 +124,6 @@ export default {
       this.$store.dispatch('computeCart');
       let total = 0;
       this.currentFoods.forEach((food) => {
-        console.log(food);
         let currentPrice;
         if (food.selectDiscountCount > 0) {
           currentPrice = food.selectDiscountCount * food.price + (food.count - food.selectDiscountCount) * food.oldPrice;

@@ -14,6 +14,8 @@ export default {
       state.discountFood ++;
       // 为food添加decrease属性
       Object.assign(food, {decrease: food.oldPrice - food.price});
+    } else {
+      Object.assign(food, {decrease: -1});
     }
     // 替换已存在的项
     for (let i = 0; i < foods.length; i++) {
@@ -77,16 +79,15 @@ export default {
         break;
       }
       let food = foods[i];
+      // 跳过非打折商品
       if (!food.oldPrice) {
         continue;
       }
       let count;
-      if ((food.count >= curMax && food.count <= food.limit) || !food.limit) {
+      if ((food.count >= curMax && food.count <= food.limit) || !food.limit || (food.count > food.limit && food.limit > curMax)) {
         count = curMax;
       } else {
-        let min = Math.min(food.limit, curMax);
-        // count = food.count > food.limit ? food.limit : food.count;
-        count = min;
+        count = food.count > food.limit ? food.limit : food.count;
       }
       food.selectDiscountCount = count;
      // 将折扣现实的food push 到数组
@@ -95,6 +96,7 @@ export default {
       }
       curMax -= count;
     }
+    // console.log(foods);
   },
   // 清除选中缓存
   [type.EMPTY_CART] (state) {
