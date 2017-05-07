@@ -1,0 +1,17 @@
+export const GET_SELLER = 'GET_SELLER';
+
+export const ADD_CART = 'ADD_CART';
+
+export const DECREASE_CART = 'DECREASE_CART';
+
+export const COMPUTE_CART = 'COMPUTE_CART';
+
+export const EMPTY_CART = 'EMPTY_CART';
+
+export const SET_TOOLINFO = 'SET_TOOLINFO';
+
+export const EMPTY_TOOLINFO = 'EMPTY_TOOLINFO';
+
+export const GET_DISCOUNTDESC = 'GET_DISCOUNTDESC';
+
+export const COMPUTE_FULLREDUCE = 'COMPUTE_FULLREDUCE';

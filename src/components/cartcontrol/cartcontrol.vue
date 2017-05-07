@@ -12,7 +12,7 @@
 
 <script>
   import Vue from 'vue';
-
+  import util from '../../util';
   import eventHub from '../../eventhub';
 
   export default {
@@ -32,7 +32,16 @@
         } else {
           this.food.count++;
         }
-        eventHub.$emit('cart-add', event.target);
+        this.$store.dispatch('addCart', this.food);
+        let max = this.$store.state.seller.maxLimit;
+        let discountFoodArr = this.$store.state.discountFoodArr;
+        if (this.food.count > this.food.limit && util.array.isInArr(discountFoodArr, this.food)) {
+          console.log(`该美食限${this.food.limit}份优惠，超过以原价计算哦`);
+          eventHub.$emit('set-toolinfo', `该美食限${this.food.limit}份优惠，超过以原价计算哦`);
+          return;
+        } else if (this.$store.state.discountFood > max && this.food.oldPrice) {
+          eventHub.$emit('set-toolinfo', `每单限${max}份优惠美食, 已为您选择最大优惠`);
+        }
       },
       decreaseCart (event) {
         if (!event._constructed) {
@@ -41,6 +50,7 @@
         if (this.food.count) {
           this.food.count--;
         }
+        this.$store.dispatch('decreaseCart', this.food);
       }
     }
   };

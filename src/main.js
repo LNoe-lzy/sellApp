@@ -10,6 +10,7 @@ import Ratings from './components/ratings/ratings.vue';
 import Seller from './components/seller/seller.vue';
 
 import './common/stylus/icon.styl';
+import store from './store';
 
 Vue.use(VueRouter);
 Vue.use(VueResource);
@@ -17,6 +18,7 @@ Vue.use(VueResource);
 // let app = Vue.extend(App);
 
 const routes = [
+  {path: '/', component: Goods},
   {path: '/goods', component: Goods},
   {path: '/ratings', component: Ratings},
   {path: '/seller', component: Seller}
@@ -29,7 +31,9 @@ const router = new VueRouter({
 /* eslint-disable no-new */
 new Vue({
   router,
+  store,
   el: '#app',
-  render: (h) => h(App)
+  template: '<App/>',
+  components: { App }
 });
 
