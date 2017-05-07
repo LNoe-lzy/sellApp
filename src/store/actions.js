@@ -27,5 +27,11 @@ export default {
     },
     computeFullReduce ({commit}) {
         commit(type.COMPUTE_FULLREDUCE);
+    },
+    setLocalstore ({commit}, data) {
+        commit(type.SET_LOCALSTORE, data);
+    },
+    getLocalstore ({commit}) {
+        commit(type.GET_LOCALSTORE);
     }
 };

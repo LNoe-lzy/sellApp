@@ -108,6 +108,9 @@
       }
     },
     methods: {
+      getFoods () {
+        return this.$store.state.foods;
+      },
       show () {
         this.showFlag = true;
         this.selectType = ALL;

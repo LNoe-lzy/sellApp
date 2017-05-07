@@ -172,5 +172,76 @@ export default {
         state.fullReducePrice += discount[idx - 1].reduce;
       }
     }
+  },
+  // 本地存储
+  [type.SET_LOCALSTORE] (state, data) {
+    let seller = state.seller;
+    if (!seller.id) return;
+    let currentSellerData = {
+      seller,
+      foods: data,
+      userState: {
+        cartInfo: state.cartInfo,
+        discountDesc: state.discountDesc,
+        discountFoodArr: state.discountFoodArr,
+        fullReducePrice: state.fullReducePrice,
+        discountFood: state.discountFood
+      }
+    };
+    let store = window.localStorage;
+    let sellData = store.getItem('sellData');
+    if (!sellData) {
+      let tmpArr = [];
+      tmpArr.push(currentSellerData);
+      store.setItem('sellData', JSON.stringify(tmpArr));
+    } else {
+      sellData = JSON.parse(sellData);
+      let pos;
+      for (let i = 0; i < sellData.length; i++) {
+        let sell = sellData[i];
+        if (sell.seller.id === seller.id) {
+          pos = i;
+          break;
+        }
+      }
+      if (pos === undefined) {
+        sellData.push(currentSellerData);
+        store.setItem('sellData', JSON.stringify(sellData));
+      } else {
+        sellData[pos] = currentSellerData;
+        store.setItem('sellData', JSON.stringify(sellData));
+      }
+    }
+  },
+  [type.GET_LOCALSTORE] (state) {
+    let seller = state.seller;
+    let store = window.localStorage;
+    let sellData = store.getItem('sellData');
+    if (!sellData) {
+      console.log('没有本地存储');
+      return;
+    } else {
+      sellData = JSON.parse(sellData);
+      let pos;
+      for (let i = 0; i < sellData.length; i++) {
+        let sell = sellData[i];
+        if (sell.seller.id === seller.id) {
+          pos = i;
+          break;
+        }
+      }
+      if (pos === undefined) {
+        console.log('本地存储没有当前数据');
+        return;
+      } else {
+        let sd = sellData[pos];
+        state.foods = sd.foods;
+        state.discountFood = sd.userState.discountFood;
+        state.cartInfo = sd.userState.cartInfo;
+        state.discountDesc = sd.userState.discountDesc;
+        state.discountFoodArr = sd.userState.discountFoodArr;
+        state.fullReducePrice = sd.userState.fullReducePrice;
+      }
+    }
   }
 };

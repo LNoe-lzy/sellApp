@@ -122,6 +122,7 @@ export default {
     totalPrice () {
       this.currentFoods = this.$store.state.foods;
       this.$store.dispatch('computeCart');
+      // this.$store.dispatch('setLocalstore', this.currentFoods);
       let total = 0;
       this.currentFoods.forEach((food) => {
         let currentPrice;
@@ -244,6 +245,9 @@ export default {
         this.toolShow = false;
       }, 2000);
     }
+  },
+  updated () {
+    this.$store.dispatch('setLocalstore', this.currentFoods);
   },
   components: {
     Cartcontrol

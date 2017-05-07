@@ -73,6 +73,25 @@
       };
     },
     computed: {
+      getGoods () {
+        let currentFoods = this.$store.state.foods;
+        console.log(currentFoods);
+        let goods = this.goods.slice(0);
+        goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            for (let i = 0; i < currentFoods.length; i++) {
+              let cf = currentFoods[i];
+              console.log(cf.count);
+              if (cf.name === food.name) {
+                Object.assign(food, cf);
+                // console.log(food.writable);
+              }
+            }
+          });
+        });
+        console.log(goods);
+        return goods;
+      },
       currentIndex () {
         for (let i = 0; i < this.listHeight.length; i++) {
           let height1 = this.listHeight[i];
@@ -100,7 +119,22 @@
       this.$http.get('/api/goods').then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
-          this.goods = response.data;
+          let goods;
+          goods = response.data;
+          console.log(12313);
+          // 如果有本地存储,更新数据
+          let currentFoods = this.$store.state.foods;
+          goods.forEach((good) => {
+            good.foods.forEach((food) => {
+              for (let i = 0; i < currentFoods.length; i++) {
+                let cf = currentFoods[i];
+                if (cf.name === food.name) {
+                  Object.assign(food, cf);
+                }
+              }
+            });
+          });
+          this.goods = goods;
           this.$nextTick(() => {
             this._initScroll();
             this._calculateHeight();

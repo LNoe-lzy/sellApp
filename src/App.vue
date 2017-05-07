@@ -31,6 +31,7 @@
             if (response.errno === ERR_OK) {
                 this.seller = response.data;
                 this.$store.dispatch('getSeller', response.data);
+                this.$store.dispatch('getLocalstore');
             }
         });
     },

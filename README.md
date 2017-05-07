@@ -1,6 +1,6 @@
 # sell
 
-> 购物车逻辑参考饿了么安卓版v7.7，样式参考版本较古老
+> sell app powered by vue.js
 
 ## Build Setup
 
