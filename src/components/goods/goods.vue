@@ -73,25 +73,6 @@
       };
     },
     computed: {
-      getGoods () {
-        let currentFoods = this.$store.state.foods;
-        console.log(currentFoods);
-        let goods = this.goods.slice(0);
-        goods.forEach((good) => {
-          good.foods.forEach((food) => {
-            for (let i = 0; i < currentFoods.length; i++) {
-              let cf = currentFoods[i];
-              console.log(cf.count);
-              if (cf.name === food.name) {
-                Object.assign(food, cf);
-                // console.log(food.writable);
-              }
-            }
-          });
-        });
-        console.log(goods);
-        return goods;
-      },
       currentIndex () {
         for (let i = 0; i < this.listHeight.length; i++) {
           let height1 = this.listHeight[i];
