@@ -1,6 +1,6 @@
 # sell
 
-> sell app powered by vue.js
+> 逻辑参考饿了么安卓版v7.7, 样式参考版本较早。
 
 ## Build Setup
 
