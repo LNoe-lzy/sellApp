@@ -46,7 +46,7 @@
         </ul>
       </div>
       <Shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice"
-                :min-price="seller.minPrice" :seller="seller"></Shopcart>
+                :min-price="seller.minPrice"></Shopcart>
     </div>
   </div>
 </template>
@@ -96,15 +96,16 @@
       }
     },
     created () {
+      let id = this.$route.params.sellerid;
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-      this.$http.get('/api/goods').then((response) => {
+      this.$store.dispatch('getLocalstore');
+      this.$http.get(`/api/goods/${id}`).then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
           let goods;
-          goods = response.data;
-          console.log(12313);
+          goods = response.data.goods;
           // 如果有本地存储,更新数据
-          let currentFoods = this.$store.state.foods;
+          let currentFoods = this.$store.state.sellerMap[id].foods;
           goods.forEach((good) => {
             good.foods.forEach((food) => {
               for (let i = 0; i < currentFoods.length; i++) {

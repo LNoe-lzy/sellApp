@@ -17,23 +17,30 @@ var proxyTable = config.dev.proxyTable
 var app = express()
 
 var appData = require('../data.json');
-var seller = appData.seller;
+var sellers = appData.sellers;
 var goods = appData.goods;
-var ratings = appData.ratings;
 
 var apiRoutes = express.Router();
-
-apiRoutes.get('/seller', function (req, res) {
+apiRoutes.get('/sellers', function (req, res) {
   res.json({
     errno: 0,
-    data: seller
+    data: sellers
   });
 });
 
-apiRoutes.get('/goods', function (req, res) {
+apiRoutes.get('/sellers/:id', function (req, res) {
+  var sellerId = parseInt(req.params.id);
   res.json({
     errno: 0,
-    data: goods
+    data: sellers[sellerId]
+  });
+});
+
+apiRoutes.get('/goods/:id', function (req, res) {
+  var sellerId = parseInt(req.params.id);
+  res.json({
+    errno: 0,
+    data: goods[sellerId]
   });
 });
 

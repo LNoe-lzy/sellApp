@@ -33,5 +33,17 @@ export default {
     },
     getLocalstore ({commit}) {
         commit(type.GET_LOCALSTORE);
+    },
+    setSellerId ({commit}, id) {
+        commit(type.SET_SELLERID, id);
+    },
+    setSellers ({commit}, sellers) {
+        commit(type.SET_SELLERS, sellers);
+    },
+    emptyById ({commit}, id) {
+        commit(type.EMPTY_BYID, id);
+    },
+    setLocalstoreById ({commit}, {data, seller}) {
+        commit(type.SET_LOCALSTOREBYID, {data, seller});
     }
 };

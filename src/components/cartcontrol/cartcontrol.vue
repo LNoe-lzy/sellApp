@@ -21,8 +21,14 @@
         type: Object
       }
     },
+    computed: {
+      getSellerId () {
+        return this.$route.params.sellerid;
+      }
+    },
     methods: {
       addCart (event) {
+        let sellerID = this.getSellerId;
         if (!event._constructed) {
           return;
         }
@@ -33,12 +39,13 @@
           this.food.count++;
         }
         this.$store.dispatch('addCart', this.food);
+        // this.$store.dispatch('getDiscountDesc');
         let max = this.$store.state.seller.maxLimit;
-        let discountFoodArr = this.$store.state.discountFoodArr;
+        let discountFoodArr = this.$store.state.sellerMap[sellerID].discountFoodArr;
         if (this.food.count > this.food.limit && util.array.isInArr(discountFoodArr, this.food)) {
           eventHub.$emit('set-toolinfo', `该美食限${this.food.limit}份优惠，超过以原价计算哦`);
           return;
-        } else if (this.$store.state.discountFood > max && this.food.oldPrice) {
+        } else if (this.$store.state.sellerMap[sellerID].discountFood > max && this.food.oldPrice) {
           eventHub.$emit('set-toolinfo', `每单限${max}份优惠美食, 已为您选择最大优惠`);
         }
       },
@@ -50,6 +57,7 @@
           this.food.count--;
         }
         this.$store.dispatch('decreaseCart', this.food);
+        // this.$store.dispatch('getDiscountDesc');
       }
     }
   };

@@ -4,10 +4,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueResource from 'vue-resource';
 import App from './App';
-
-import Goods from './components/goods/goods.vue';
-import Ratings from './components/ratings/ratings.vue';
-import Seller from './components/seller/seller.vue';
+import Seller from './components/seller/seller';
+import Localcart from './components/localcart/localcart';
 
 import './common/stylus/icon.styl';
 import store from './store';
@@ -18,10 +16,8 @@ Vue.use(VueResource);
 // let app = Vue.extend(App);
 
 const routes = [
-  {path: '/', component: Goods},
-  {path: '/goods', component: Goods},
-  {path: '/ratings', component: Ratings},
-  {path: '/seller', component: Seller}
+  {path: '/seller/:sellerid', name: 'seller', component: Seller},
+  {path: '/cart', component: Localcart}
 ];
 
 const router = new VueRouter({

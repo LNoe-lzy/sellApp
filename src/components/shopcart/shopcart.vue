@@ -21,10 +21,10 @@
         </div>
         <div class="content-right"
              @click.stop.prevent="pay">
-          <div class="pay"
+          <router-link to="/cart" class="pay"
                :class="payClass">
             {{payDesc}}
-          </div>
+          </router-link>
         </div>
       </div>
       <transition name="fold">
@@ -100,27 +100,34 @@ export default {
       fold: true,
       currentFoods: [],
       toolShow: false,
-      toolInfo: ''
+      toolInfo: '',
+      seller: {}
     };
   },
   created () {
     eventHub.$on('set-toolinfo', this.showTooltip);
+    // this.seller = this.$store.state.seller;
+  },
+  updated () {
+    this.$store.dispatch('setLocalstore', this.currentFoods);
   },
   computed: {
+    // 获取当前的seller id
+    getSellerId () {
+      return this.$route.params.sellerid;
+    },
     // 从state获取当前的购物车状态信息
     getInfo () {
-      let info = this.$store.state.cartInfo;
-      // let seller = this.$store.state.seller;
-      if (info) {
-        // eventHub.$emit('set-toolinfo', `每单限${seller.maxLimit}份优惠美食, 已为您选择最大优惠`);
-        return info;
-      } else {
-        return '';
-      }
+      let sellerID = this.getSellerId;
+      let c = this.totalCount;
+      c = '';
+      let info = this.$store.state.sellerMap[sellerID].cartInfo + c;
+      return info || '';
     },
     // 计算总价
     totalPrice () {
-      this.currentFoods = this.$store.state.foods;
+      let sellerID = this.getSellerId;
+      this.currentFoods = this.$store.state.sellerMap[sellerID].foods;
       this.$store.dispatch('computeCart');
       // this.$store.dispatch('setLocalstore', this.currentFoods);
       let total = 0;
@@ -135,6 +142,7 @@ export default {
         }
         total += currentPrice;
       });
+      this.$store.dispatch('getDiscountDesc');
       return total;
     },
     totalCount () {
@@ -180,13 +188,17 @@ export default {
       return show;
     },
     discountDesc () {
-      this.$store.dispatch('getDiscountDesc');
-      return this.$store.state.discountDesc;
+      // this.$store.dispatch('getDiscountDesc');
+      let sellerID = this.getSellerId;
+      let c = this.totalCount;
+      c = '';
+      return this.$store.state.sellerMap[sellerID].discountDesc + c;
     },
     // 获取满减的价格
     fullReduce () {
       this.$store.dispatch('computeFullReduce');
-      return this.$store.state.fullReducePrice;
+      let sellerID = this.getSellerId;
+      return this.$store.state.sellerMap[sellerID].fullReducePrice;
     }
   },
   methods: {
@@ -218,24 +230,26 @@ export default {
       this.fold = !this.fold;
     },
     empty () {
-      this.$store.dispatch('emptyCart');
-      // console.log(this.currentFoods);
+      this.currentFoods.forEach((food) => {
+        food.count = 0;
+        food.selectDiscountCount = 0;
+      });
       this.selectFoods.forEach((food) => {
         food.count = 0;
         food.selectDiscountCount = 0;
       });
-      // this.currentFoods = [];
+      this.$store.dispatch('emptyCart');
     },
     hideList () {
       this.fold = true;
     },
     pay () {
-      if (this.totalPrice < this.minPrice) {
-        return;
-      }
-      let total = this.totalPrice + this.$store.state.seller.deliveryPrice - this.fullReduce;
-      let info = `支付 ¥ ${total} \n其中: \n商品总价: ¥${this.totalPrice}\n运费:¥${this.$store.state.seller.deliveryPrice}\n满减:¥${this.fullReduce}`;
-      window.alert(info);
+      // if (this.totalPrice < this.minPrice) {
+      //   return;
+      // }
+      // let total = this.totalPrice + this.$store.state.seller.deliveryPrice - this.fullReduce;
+      // let info = `支付 ¥ ${total} \n其中: \n商品总价: ¥${this.totalPrice}\n运费:¥${this.$store.state.seller.deliveryPrice}\n满减:¥${this.fullReduce}`;
+      // window.alert(info);
     },
     // 显示tooltip
     showTooltip (info) {
@@ -245,9 +259,6 @@ export default {
         this.toolShow = false;
       }, 2000);
     }
-  },
-  updated () {
-    this.$store.dispatch('setLocalstore', this.currentFoods);
   },
   components: {
     Cartcontrol
@@ -354,6 +365,7 @@ export default {
         flex: 0 0 105px
         width: 105px
         .pay
+          display: block
           height: 48px
           line-height: 48px
           text-align: center

@@ -7,15 +7,10 @@ import mutations from './mutations';
 Vue.use(Vuex);
 
 const state = {
-    discountFood: 0,
-    discountType: 0,
     seller: {},
-    foods: [],
-    cartInfo: '',
-    toolInfo: '',
-    discountDesc: '',
-    discountFoodArr: [],
-    fullReducePrice: 0
+    sellers: [],
+    sellerMap: {},
+    sellerId: 0
 };
 
 export default new Vuex.Store({

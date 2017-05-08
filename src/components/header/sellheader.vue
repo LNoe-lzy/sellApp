@@ -1,5 +1,6 @@
 <template>
   <div class="header">
+    <router-link to="/" class="back">返回</router-link>
     <div class="content-wrapper">
       <div class="avatar">
         <img width="64" height="64" :src="seller.avatar">
@@ -104,6 +105,12 @@
     position: relative
     background: rgba(7, 17, 27, 0.5)
     color: #fff
+    .back
+      position: absolute
+      top: 25px
+      right: 20px
+      color: #fff
+      z-index: 1000
     .content-wrapper
       position: relative;
       padding: 24px 12px 18px 24px
