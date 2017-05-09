@@ -8,10 +8,6 @@ export const COMPUTE_CART = 'COMPUTE_CART';
 
 export const EMPTY_CART = 'EMPTY_CART';
 
-export const SET_TOOLINFO = 'SET_TOOLINFO';
-
-export const EMPTY_TOOLINFO = 'EMPTY_TOOLINFO';
-
 export const GET_DISCOUNTDESC = 'GET_DISCOUNTDESC';
 
 export const COMPUTE_FULLREDUCE = 'COMPUTE_FULLREDUCE';
@@ -26,4 +22,3 @@ export const SET_SELLERS = 'SET_SELLERS';
 
 export const EMPTY_BYID = 'EMPTY_BYID';
 
-export const SET_LOCALSTOREBYID = 'SET_LOCALSTOREBYID';

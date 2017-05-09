@@ -135,7 +135,7 @@ export default {
             sell.foods.foods = [];
             // console.log(sell.foods);
             console.log(sell.seller);
-            this.$store.dispatch('setLocalstoreById', {data: sell.foods.foods, seller: sell.seller});
+            this.$store.dispatch('setLocalstore', {data: sell.foods.foods, seller: sell.seller});
         }
     },
     updated () {

@@ -109,7 +109,7 @@ export default {
     // this.seller = this.$store.state.seller;
   },
   updated () {
-    this.$store.dispatch('setLocalstore', this.currentFoods);
+    this.$store.dispatch('setLocalstore', {data: this.currentFoods});
   },
   computed: {
     // 获取当前的seller id
